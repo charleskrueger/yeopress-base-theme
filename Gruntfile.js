@@ -8,6 +8,7 @@ module.exports = function(grunt) {
 	// * for Stylus/Nib support, `npm install --save-dev grunt-contrib-stylus`
 
 	var npmDependencies = require('./package.json').devDependencies;
+	var hasCompass = npmDependencies['grunt-contrib-compass'] !== undefined;
 	var hasSass = npmDependencies['grunt-contrib-sass'] !== undefined;
 	var hasStylus = npmDependencies['grunt-contrib-stylus'] !== undefined;
 
@@ -17,11 +18,15 @@ module.exports = function(grunt) {
 		watch : {
 			sass : {
 				files : ['scss/**/*.scss'],
-				tasks : (hasSass) ? ['sass:dev'] : null
+				tasks : (hasCompass) ? ['compass:dev'] : (hasSass) ? ['sass:dev'] : null
 			},
 			stylus : {
 				files : ['stylus/**/*.styl'],
 				tasks : (hasStylus) ? ['stylus:dev'] : null
+			},
+			hbs : {
+				files: ['templates/**/*.hbs'],
+				tasks: ['handlebars']
 			},
 			css : {
 				files : ['css/**/*.css'],
@@ -44,6 +49,23 @@ module.exports = function(grunt) {
 			}
 		},
 
+
+    // Handlebars Templates
+    // @see http://danburzo.ro/grunt/chapters/handlebars/
+    handlebars: {
+      all : { 
+        options : {
+          amd: true,
+          processName: function(filePath) {
+            return filePath.replace(/^templates\//, '').replace(/\.hbs$/, '');
+          }
+        },
+        files : {
+          "js/app/templates.js" : ["templates/**/*.hbs"]
+        }
+      }
+    },
+
 		// JsHint your javascript
 		jshint : {
 			all : ['js/*.js', '!js/modernizr.js', '!js/*.min.js', '!js/vendor/**/*.js'],
@@ -61,6 +83,16 @@ module.exports = function(grunt) {
 				undef: false
 			}
 		},
+
+    
+    compass: {
+      dev: {
+        options: {
+          sassDir: 'scss',
+          cssDir: 'css'
+        }
+      }
+    },
 
 		// Dev and production build for sass
 		sass : {
@@ -221,11 +253,13 @@ module.exports = function(grunt) {
 		grunt.loadNpmTasks('grunt-contrib-stylus');
 	}
 
+	grunt.loadNpmTasks('grunt-bower-requirejs');
+  grunt.loadNpmTasks('grunt-contrib-compass');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-bower-requirejs');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
 	grunt.loadNpmTasks('grunt-contrib-imagemin');
+	grunt.loadNpmTasks('grunt-contrib-handlebars');
 	grunt.loadNpmTasks('grunt-svgmin');
 
 	// Run bower install

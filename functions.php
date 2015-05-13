@@ -15,10 +15,22 @@ function theme_enqueue_scripts(){
 	wp_enqueue_script('livereload');
 
 	wp_enqueue_style('global', get_bloginfo('template_url') . '/css/global.css');
+
+
+	/**
+	 * Add Livereload if we're developing locally
+	 * @see http://robandlauren.com/2014/02/05/live-reload-grunt-wordpress/
+	 */
+	// if (in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1'))) {
+	//   wp_register_script('livereload', 'http://localhost:35729/livereload.js?snipver=1', null, false, true);
+	//   wp_enqueue_script('livereload');
+	// }
 }
+
 
 //Add Featured Image Support
 add_theme_support('post-thumbnails');
+
 
 // Clean up the <head>
 function removeHeadLinks() {
@@ -27,6 +39,7 @@ function removeHeadLinks() {
 }
 add_action('init', 'removeHeadLinks');
 remove_action('wp_head', 'wp_generator');
+
 
 function register_menus() {
 	register_nav_menus(
@@ -39,8 +52,8 @@ function register_menus() {
 }
 add_action( 'init', 'register_menus' );
 
-function register_widgets(){
 
+function register_widgets(){
 	register_sidebar( array(
 		'name' => __( 'Sidebar' ),
 		'id' => 'main-sidebar',
@@ -49,6 +62,6 @@ function register_widgets(){
 		'before_title' => '<h3 class="widget-title">',
 		'after_title' => '</h3>',
 	) );
-
 }//end register_widgets()
 add_action( 'widgets_init', 'register_widgets' );
+
